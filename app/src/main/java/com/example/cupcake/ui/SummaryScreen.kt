@@ -15,6 +15,7 @@
  */
 package com.example.cupcake.ui
 
+import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -52,6 +53,7 @@ fun OrderSummaryScreen(
     onSendButtonClicked: (String, String) -> Unit,  // Modificación: Se agrega este parámetro para enviar.
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val resources = LocalContext.current.resources
 
     val numberOfCupcakes = resources.getQuantityString(
@@ -105,7 +107,15 @@ fun OrderSummaryScreen(
             ) {
                 Button(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = { onSendButtonClicked(newOrder, orderSummary) }  // Modificación: Se pasa la función para enviar.
+                    onClick = {
+                        val sendIntent: Intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, orderSummary)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(sendIntent, null)
+                        context.startActivity(shareIntent)
+                    }
                 ) {
                     Text(stringResource(R.string.send))
                 }
